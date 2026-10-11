@@ -1,0 +1,88 @@
+# DSMPTitle language file
+prefix: "&8[&x&A&6&8&4&F&F&lᴅ&x&B&5&9&9&F&F&lᴛ&x&C&4&A&D&F&F&lɪ&x&D&3&C&2&F&F&lᴛ&x&E&1&D&6&F&F&lʟ&x&F&0&E&B&F&F&lᴇ&8] &f&l» &r"
+currency-name: "金币"
+messages:
+  no-money: "%prefix%&c%currency%不足购买自定义称号需要&e%price%&c%currency%"
+  economy-success: "%prefix%&a成功扣除&e%price%&a%currency%"
+  xp-no-money: "%prefix%&c经验等级不足, 购买自定义称号需要&e%xp%&c级经验等级"
+  xp-success: "%prefix%&a成功扣除&e%xp%&a级经验等级"
+  prompt: "%prefix%&7请在&e%seconds%&7秒内在聊天框输入你的称号名称"
+  format: "%prefix%&7格式&e%min%~%max%&7个字, 禁止 & [ ] @ # / : |符号"
+  cancel-help: "%prefix%&7如果想要取消, 则输入/dt cancel"
+  timeout: "%prefix%&c时间已耗尽称号创建取消, 已自动返还&e%price%&c%currency%"
+  cancelled: "%prefix%&a已取消称号创建, &e%price%&a%currency%已返还至账户"
+  timeout-xp: "%prefix%&c时间已耗尽称号创建取消, 已自动返还&e%xp%&c级经验等级"
+  cancelled-xp: "%prefix%&a已取消称号创建, &e%xp%&a级经验等级已返还"
+  no-waiting: "%prefix%&7你当前没有正在等待输入的称号"
+  banned: "%prefix%&c输入失败称号禁止包含违禁字符或关键词, 已返还&e%price%&c%currency%"
+  too-short: "%prefix%&c输入失败称号最少需要%min%个字, 已返还&e%price%&c%currency%"
+  too-long: "%prefix%&c输入失败称号最多只能%max%个字, 已返还&e%price%&c%currency%"
+  item-success: "%prefix%&a成功扣除&e%price%&a个&e%item%"
+  success: "%prefix%&a自定义称号购买成功, 已自动装备新称号"
+  already-waiting: "%prefix%&e你已经在等待输入称号, 请直接在聊天框输入"
+  withdraw-failed: "%prefix%&c扣款失败, 请稍后再试"
+  payment-failed: "%prefix%&c支付失败, 请稍后再试"
+  title-set: "%prefix%&a已切换称号为 %title%&a"
+  no-titles: "%prefix%&7你还没有购买过任何称号, 使用&e/dt buy&7购买吧"
+  player-not-found: "%prefix%&c找不到玩家 %player% 的称号数据"
+  no-permission: "%prefix%&c你没有权限执行这个操作"
+  usage: "%prefix%&6称号指令
+
+\n&r  &e/dt buy &8- &7购买自定义称号
+\n&r  &e/dt cancel &8- &7取消当前称号创建
+\n&r  &e/dt clear &8- &7清除当前称号佩戴
+\n&r  &e/dt gui &8- &7打开称号仓库
+\n&r  &e/dt menu &8- &7打开称号仓库"
+  admin-usage: "%prefix%&6管理员指令
+
+\n&r  &e/dt clear <玩家> &8- &7取消其他玩家称号佩戴
+\n&r  &e/dt gui <玩家> &8- &7查看玩家称号仓库
+\n&r  &e/dt menu <玩家> &8- &7查看玩家称号仓库
+\n&r  &e/dt reload &8- &7重载插件配置
+\n&r  &e/dt set <玩家> <称号> <颜色> <优先级> &8- &7设置玩家称号
+\n&r  &e/dt remove <玩家> <称号> &8- &7删除玩家称号
+\n&r  &e/dt removebyindex <玩家> <索引> &8- &7按索引删除称号"
+  console-player-only: "%prefix%&c该指令只能由玩家使用"
+  countdown-10: "%prefix%&e还有10秒, 请尽快输入称号名字"
+  countdown-5: "%prefix%&c还有5秒"
+  countdown-3: "%prefix%&c还有3秒"
+  countdown-2: "%prefix%&c还有2秒"
+  countdown-1: "%prefix%&c还有1秒"
+  clear-title-success: "%prefix%&a已清除你的自定义称号, 恢复默认称号"
+  clear-other-success: "%prefix%&a已清除玩家%player%的称号佩戴"
+  set-success: "%prefix%&a成功为玩家%player%设置称号（优先级: %weight%）: %title%"
+  set-usage: "%prefix%&c用法: /dt set <玩家> <称号文本> <颜色码> <优先级> 例: /dt set Alex 冒险者 &6 600"
+  set-title-too-short: "%prefix%&c称号文本不能为空"
+  set-weight-not-number: "%prefix%&c优先级必须输入有效数字"
+  reload-usage: "%prefix%&c用法: /dt reload | /dt reload config | /dt reload data | /dt reload lang | /dt reload group"
+  reload-all-success: "%prefix%&a插件配置已全部重载"
+  reload-config-success: "%prefix%&a配置文件已重载"
+  reload-data-success: "%prefix%&a玩家称号数据已重载"
+  reload-lang-success: "%prefix%&a语言文件已重载"
+  reload-group-success: "%prefix%&a称号组配置已重载"
+  weight-invalid: "%prefix%&c优先级必须大于0"
+  set-failed: "%prefix%&c设置称号时发生异常查看控制台日志"
+  remove-usage: "%prefix%&c用法: /dt remove <玩家> <称号文本>（称号带空格直接写, 不需要引号）"
+  remove-not-found: "%prefix%&c该玩家仓库没有此称号你输入的称号: %title%"
+  remove-success: "%prefix%&a成功从玩家%player%仓库删除称号: %title%"
+  remove-index-usage: "%prefix%&c用法: /dt removebyindex <玩家> <索引>, 索引从0开始"
+  index-invalid: "%prefix%&c索引必须是数字"
+  index-out-of-range: "%prefix%&c索引越界该玩家称号总数: %size%"
+  remove-index-success: "%prefix%&a已按索引删除称号: %title%"
+  apply-failed: "%prefix%&c设置称号失败, %currency%已返还"
+  title-record-not-found: "%prefix%&c找不到该称号记录"
+  title-switch-failed: "%prefix%&c称号切换失败, 请稍后再试"
+  item-no-money: "%prefix%&c物品不足, 购买称号需要&e%price%&c个&e%item%"
+  charged-item: "%prefix%&a成功扣除&e%price%&a个&e%item%"
+  timeout-item: "%prefix%&c时间已耗尽称号创建取消, 已自动返还&e%price%&c个&e%item%"
+  cancelled-item: "%prefix%&a已取消称号创建, &e%price%&a个&e%item%已返还至背包"
+  banned-item: "%prefix%&c输入失败称号禁止包含违禁字符或关键词, 已返还&e%price%&c个&e%item%"
+  too-short-item: "%prefix%&c输入失败称号最少需要%min%个字, 已返还&e%price%&c个&e%item%"
+  too-long-item: "%prefix%&c输入失败称号最多只能%max%个字, 已返还&e%price%&c个&e%item%"
+  apply-failed-item: "%prefix%&c设置称号失败, &e%price%&c个&e%item%已返还"
+  banned-xp: "%prefix%&c输入失败称号禁止包含违禁字符或关键词, 已返还&e%xp%&c级经验等级"
+  too-short-xp: "%prefix%&c输入失败称号最少需要%min%个字, 已返还&e%xp%&c级经验等级"
+  too-long-xp: "%prefix%&c输入失败称号最多只能%max%个字, 已返还&e%xp%&c级经验等级"
+  apply-failed-xp: "%prefix%&c设置称号失败, &e%xp%&c级经验等级已返还"
+  payment-config-invalid: "%prefix%&c支付方式配置无效, 请联系管理员"
+  vault-required: "%prefix%&c当前支付方式为 economy, 服务器需要安装 Vault 经济服务"

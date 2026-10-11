@@ -1,0 +1,76 @@
+name: DSMPTitle
+version: 2.1.0
+main: com.dsmp.title.DSMPTitlePlugin
+api-version: '1.21'
+author: dydaozhu
+depend:
+  - LuckPerms
+softdepend:
+  - Vault
+commands:
+  dsmptitle:
+    description: DSMP 自定义称号系统
+    usage: /<command> <buy|cancel|clear|gui|menu|reload|set|remove|removebyindex>
+    aliases: [dt]
+permissions:
+  dsmptitle.*:
+    description: DSMPTitle 全部权限
+    default: false
+    children:
+      dsmptitle.buy: true
+      dsmptitle.cancel: true
+      dsmptitle.clear: true
+      dsmptitle.clear.other: true
+      dsmptitle.menu: true
+      dsmptitle.menu.other: true
+      dsmptitle.reload: true
+      dsmptitle.reload.data: true
+      dsmptitle.reload.config: true
+      dsmptitle.reload.lang: true
+      dsmptitle.reload.group: true
+      dsmptitle.remove: true
+      dsmptitle.set: true
+  dsmptitle.buy:
+    description: 购买称号
+    default: true
+  dsmptitle.cancel:
+    description: 取消购买称号
+    default: true
+  dsmptitle.clear:
+    description: 取消自己的称号佩戴
+    default: true
+  dsmptitle.clear.other:
+    description: 取消其他玩家称号佩戴
+    default: op
+  dsmptitle.menu:
+    description: 打开自己的称号菜单
+    default: true
+  dsmptitle.menu.other:
+    description: 打开其他玩家称号菜单
+    default: op
+  dsmptitle.reload:
+    description: 重载插件配置
+    default: op
+    children:
+      dsmptitle.reload.data: true
+      dsmptitle.reload.config: true
+      dsmptitle.reload.lang: true
+      dsmptitle.reload.group: true
+  dsmptitle.reload.data:
+    description: 重载数据文件
+    default: op
+  dsmptitle.reload.config:
+    description: 重载主配置
+    default: op
+  dsmptitle.reload.lang:
+    description: 重载语言文件
+    default: op
+  dsmptitle.reload.group:
+    description: 重载称号组配置
+    default: op
+  dsmptitle.remove:
+    description: 移除称号
+    default: op
+  dsmptitle.set:
+    description: 设置玩家称号
+    default: op

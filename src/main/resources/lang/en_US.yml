@@ -1,0 +1,88 @@
+# DSMPTitle language file
+prefix: "&8[&x&A&6&8&4&F&F&lᴅ&x&B&5&9&9&F&F&lᴛ&x&C&4&A&D&F&F&lɪ&x&D&3&C&2&F&F&lᴛ&x&E&1&D&6&F&F&lʟ&x&F&0&E&B&F&F&lᴇ&8] &f&l» &r"
+currency-name: "coin"
+messages:
+  no-money: "%prefix%&cNot enough island coins! A custom title costs &e%price%&c coins"
+  economy-success: "%prefix%&aSuccessfully charged &e%price%&a %currency%"
+  xp-no-money: "%prefix%&cNot enough experience levels! A custom title costs &e%xp%&c experience levels"
+  xp-success: "%prefix%&aSuccessfully charged &e%xp%&a experience levels"
+  prompt: "%prefix%&7Please enter your title in chat within &e%seconds%&7 seconds"
+  format: "%prefix%&7Length: &e%min%~%max%&7 characters, forbidden: & [ ] @ # / : |"
+  cancel-help: "%prefix%&7To cancel, enter /dt cancel"
+  timeout: "%prefix%&cTime expired! Title creation cancelled and &e%price%&c island coins were refunded"
+  cancelled: "%prefix%&aTitle creation cancelled, &e%price%&a island coins have been refunded"
+  timeout-xp: "%prefix%&cTime expired! Title creation cancelled and &e%xp%&c experience levels were refunded"
+  cancelled-xp: "%prefix%&aTitle creation cancelled, &e%xp%&a experience levels have been refunded"
+  no-waiting: "%prefix%&7You are not currently waiting to enter a title"
+  banned: "%prefix%&cInvalid input! The title contains forbidden characters or keywords &e%price%&c coins refunded"
+  too-short: "%prefix%&cInvalid input! The title must contain at least %min% characters &e%price%&c coins refunded"
+  too-long: "%prefix%&cInvalid input! The title can contain at most %max% characters &e%price%&c coins refunded"
+  item-success: "%prefix%&aSuccessfully charged &e%price%&a x &e%item%"
+  success: "%prefix%&aCustom title purchased successfully and equipped"
+  already-waiting: "%prefix%&eYou are already entering a title Please type it in chat"
+  withdraw-failed: "%prefix%&cPayment failed Please try again later"
+  title-set: "%prefix%&aSwitched title to %title%&a!"
+  no-titles: "%prefix%&7You have no purchased titles Use &e/dt buy&7 to buy one"
+  player-not-found: "%prefix%&cCould not find title data for player %player%"
+  no-permission: "%prefix%&cYou do not have permission to do this"
+  usage: "%prefix%&6Title Commands
+
+\n&r  &e/dt buy &8- &7Purchase a custom title
+\n&r  &e/dt cancel &8- &7Cancel the current title creation
+\n&r  &e/dt clear &8- &7Clear your equipped title
+\n&r  &e/dt gui &8- &7Open the title storage
+\n&r  &e/dt menu &8- &7Open the title storage"
+  admin-usage: "%prefix%&6&lAdmin Commands
+
+\n&r  &e/dt clear <player> &8- &7Clear another player's equipped title
+\n&r  &e/dt gui <player> &8- &7View a player's title storage
+\n&r  &e/dt menu <player> &8- &7View a player's title storage
+\n&r  &e/dt reload &8- &7Reload plugin configuration
+\n&r  &e/dt set <player> <title> <color> <weight> &8- &7Set a player's title
+\n&r  &e/dt remove <player> <title> &8- &7Remove a player's title
+\n&r  &e/dt removebyindex <player> <index> &8- &7Remove a title by index"
+  console-player-only: "%prefix%&cThis command can only be used by a player"
+  countdown-10: "%prefix%&e10 seconds remaining, enter your title soon!"
+  countdown-5: "%prefix%&c5 seconds remaining!"
+  countdown-3: "%prefix%&c3 seconds remaining!"
+  countdown-2: "%prefix%&c2 seconds remaining!"
+  countdown-1: "%prefix%&c1 second remaining!"
+  clear-title-success: "%prefix%&aYour custom title has been cleared and the default title restored!"
+  clear-other-success: "%prefix%&aCleared the equipped title for player %player%"
+  set-success: "%prefix%&aSuccessfully set title for %player% (weight: %weight%): %title%"
+  set-usage: "%prefix%&cUsage: /dt set <player> <title> <color> <weight> Example: /dt set Alex Adventurer &6 600"
+  set-title-too-short: "%prefix%&cTitle text cannot be empty!"
+  set-weight-not-number: "%prefix%&cWeight must be a valid number!"
+  reload-usage: "%prefix%&cUsage: /dt reload | /dt reload config | /dt reload data | /dt reload lang | /dt reload group"
+  reload-all-success: "%prefix%&aAll plugin configuration has been reloaded"
+  reload-config-success: "%prefix%&aConfiguration file reloaded"
+  reload-data-success: "%prefix%&aPlayer title data reloaded"
+  reload-lang-success: "%prefix%&aLanguage files reloaded"
+  reload-group-success: "%prefix%&aTitle group configuration reloaded"
+  weight-invalid: "%prefix%&cWeight must be greater than 0!"
+  set-failed: "%prefix%&cAn error occurred while setting the title Check the console log"
+  remove-usage: "%prefix%&cUsage: /dt remove <player> <title> (quotes are not required for titles with spaces)"
+  remove-not-found: "%prefix%&cThat player does not have this title: %title%"
+  remove-success: "%prefix%&aRemoved title %title% from player %player%"
+  remove-index-usage: "%prefix%&cUsage: /dt removebyindex <player> <index>, index starts at 0"
+  index-invalid: "%prefix%&cIndex must be a number!"
+  index-out-of-range: "%prefix%&cIndex out of range! Total titles: %size%"
+  remove-index-success: "%prefix%&aRemoved title by index: %title%"
+  apply-failed: "%prefix%&cFailed to set the title Your island coins have been refunded"
+  title-record-not-found: "%prefix%&cTitle record not found!"
+  title-switch-failed: "%prefix%&cFailed to switch title Please try again later"
+  item-no-money: "%prefix%&cNot enough items, purchasing a title requires &e%price%&c x &e%item%"
+  charged-item: "%prefix%&aSuccessfully charged &e%price%&a x &e%item%"
+  timeout-item: "%prefix%&cTime expired, title creation cancelled and &e%price%&c x &e%item% were returned"
+  cancelled-item: "%prefix%&aTitle creation cancelled, &e%price%&a x &e%item% were returned"
+  banned-item: "%prefix%&cInvalid input, forbidden characters or keywords detected, &e%price%&c x &e%item% returned"
+  too-short-item: "%prefix%&cInvalid input, title must contain at least %min% characters, &e%price%&c x &e%item% returned"
+  too-long-item: "%prefix%&cInvalid input, title can contain at most %max% characters, &e%price%&c x &e%item% returned"
+  apply-failed-item: "%prefix%&cFailed to set the title, &e%price%&c x &e%item% returned"
+  banned-xp: "%prefix%&cInvalid input, forbidden characters or keywords detected, &e%xp%&c experience levels refunded"
+  too-short-xp: "%prefix%&cInvalid input, title must contain at least %min% characters, &e%xp%&c experience levels refunded"
+  too-long-xp: "%prefix%&cInvalid input, title can contain at most %max% characters, &e%xp%&c experience levels refunded"
+  apply-failed-xp: "%prefix%&cFailed to set the title, &e%xp%&c experience levels refunded"
+  payment-failed: "%prefix%&cPayment failed, please try again later"
+  payment-config-invalid: "%prefix%&cThe configured payment method is invalid, please contact an administrator"
+  vault-required: "%prefix%&cThe payment method is economy, the server requires Vault economy"

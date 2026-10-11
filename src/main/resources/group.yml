@@ -1,0 +1,8 @@
+# DSMPTitle 权限组称号配置
+# 键名必须与 LuckPerms 权限组名称一致
+# 如果 group.yml 留空，则不会设置任何权限组称号
+
+default:
+  title: 萌新
+  color: '&7'
+  weight: 1

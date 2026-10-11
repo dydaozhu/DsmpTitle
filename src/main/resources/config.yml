@@ -1,0 +1,125 @@
+# ================================
+# DSMPTitle 配置文件
+# 作者：dydaozhu
+# ================================
+# 购买称号的价格，设置为0则免费
+price: 60000
+# 购买称号的支付方式
+# economy = 使用 Vault 经济
+# xp = 扣除玩家经验等级
+# 直接填写物品id = 扣除对应物品, 例如 "acacia_log"
+use-item: "economy"
+# 称号的优先级
+prefix-weight: 500
+
+# --------------------------
+# 称号包裹符号配置
+# --------------------------
+# 称号前面包裹符号，默认 [
+title-prefix-wrap: "["
+# 称号后面包裹符号，默认 ]
+title-suffix-wrap: "]"
+# 玩家购买称号默认文字颜色
+default-buy-title-color: "&d"
+
+# 是否开启聊天格式化功能
+# 如果你有其他聊天格式化插件，比如essentialchat，请设置为false
+enable-chat-format: false
+# 聊天格式，%title%为当前称号，%player%为发送玩家，%message%为发送的信息
+default-chat: "%title%%player%: &r%message%"
+# 称号最小字数
+min-char: 2
+# 称号最大字数
+max-char: 9
+# 购买以后等待输入的时间，单位秒
+wait-seconds: 60
+# 称号后面的玩家名字的颜色
+separator-color: "&7"
+# GUI 设置
+gui:
+  # 称号仓库名称
+  title: "&6称号仓库"
+  # 管理员打开其他玩家称号仓库的显示名称，%player%表示玩家
+  other-title: "&6%player%的称号仓库"
+  # 仓库尺寸
+  size: 54
+  # GUI 空白位置图标
+  filler-material: BLACK_STAINED_GLASS_PANE
+  # 顶部中央标题图标
+  header-material: PAINTING
+  header-slot: 4
+  header-name: "&6称号仓库"
+  header-lore:
+    - "&7存放称号的地方"
+    - "&e点击使用称号"
+  # 玩家无称号时显示的物品
+  empty-material: CHEST
+  # 第三排第五格, 从0开始计数为22
+  empty-slot: 22
+  # 玩家仓库里的称号显示的物品
+  title-material: NAME_TAG
+  # 玩家正在使用的称号显示的物品
+  active-material: LIME_DYE
+  # 玩家没有称号时显示的提示词
+  empty-name: "&7暂无已购买的称号"
+  empty-lore:
+    - "&8使用 &e/dt buy &8购买新的自定义称号"
+  # 玩家称号显示的提示词，支持变量 %color% %wrap_prefix% %wrap_suffix% %title%
+  item-name: "%color%%wrap_prefix%%title%%wrap_suffix%"
+  item-lore:
+    - "&7点击切换为这个称号"
+    - "&8购买时间：&f%time%"
+  # 玩家称号正在使用的提示词
+  active-lore:
+    - "&a当前正在使用"
+    - "&8购买时间：&f%time%"
+  readonly-lore:
+    - "&c你正在查看其他玩家的称号仓库"
+    - "&8购买时间：&f%time%"
+  # 翻页按钮
+  previous-material: ARROW
+  previous-slot: 48
+  previous-name: "&7上一页"
+  previous-lore:
+    - "&8返回上一页"
+  next-material: ARROW
+  next-slot: 50
+  next-name: "&7下一页"
+  next-lore:
+    - "&8前往下一页"
+# 禁止设置在称号的文字
+# 不区分大小写；也会检查中文关键词
+# 特殊符号请用单引号''包裹，而不是双引号""
+banned-words:
+  - '&'
+  - '['
+  - ']'
+  - '@'
+  - '#'
+  - '/'
+  - '\\'
+  - ':'
+  - ';'
+  - '：'
+  - '；'
+  - '‘'
+  - '’'
+  - '“'
+  - '”'
+  - "'"
+  - '"'
+  - '|'
+  - '【'
+  - '】'
+  - '丨'
+  - '{'
+  - '}'
+  - "op"
+  - "管理"
+  - "admin"
+  - "生电玩家"
+  - "岛管"
+  - "DSMP"
+  - "dsmp"
+# 提示语言，可选 zh_CN / en_US
+language: zh_CN
