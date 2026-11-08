@@ -1,5 +1,5 @@
 name: DSMPTitle
-version: 2.1.0
+version: 2.1.1
 main: com.dsmp.title.DSMPTitlePlugin
 api-version: '1.21'
 author: dydaozhu
@@ -10,7 +10,7 @@ softdepend:
 commands:
   dsmptitle:
     description: DSMP 自定义称号系统
-    usage: /<command> <buy|cancel|clear|gui|menu|reload|set|remove|removebyindex>
+    usage: /<command> <buy|cancel|clear|gui|menu|reload|set|wear|remove>
     aliases: [dt]
 permissions:
   dsmptitle.*:
@@ -30,6 +30,7 @@ permissions:
       dsmptitle.reload.group: true
       dsmptitle.remove: true
       dsmptitle.set: true
+      dsmptitle.wear: true
   dsmptitle.buy:
     description: 购买称号
     default: true
@@ -73,4 +74,7 @@ permissions:
     default: op
   dsmptitle.set:
     description: 设置玩家称号
+    default: op
+  dsmptitle.wear:
+    description: 为玩家佩戴称号
     default: op

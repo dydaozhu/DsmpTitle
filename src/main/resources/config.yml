@@ -123,3 +123,6 @@ banned-words:
   - "dsmp"
 # 提示语言，可选 zh_CN / en_US
 language: zh_CN
+
+# 配置文件版本，请勿手动修改
+config-version: 1

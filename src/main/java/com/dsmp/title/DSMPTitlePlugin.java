@@ -12,6 +12,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.*;
 import org.bukkit.command.*;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
@@ -27,6 +28,10 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -142,9 +147,61 @@ public final class DSMPTitlePlugin extends JavaPlugin implements Listener, Comma
         }
     }
 
+    /** 读取玩家称号列表，不存在时返回空列表 */
+    private List<Map<String,Object>> titleList(UUID owner){
+        List<Map<String,Object>> titles = (List<Map<String,Object>>) data.getList(owner.toString() + ".titles");
+        return titles == null ? new ArrayList<>() : titles;
+    }
+
+    /** 把指令中从 from 开始的参数合并成称号选择器，并去掉首尾引号 */
+    private String titleSelector(String[] args, int from){
+        String joined = String.join(" ", Arrays.copyOfRange(args, from, args.length)).trim();
+        return joined.replaceAll("^\"|\"$", "").trim();
+    }
+
+    /**
+     * 解析称号选择器：数字且未越界时按索引（从0开始），否则按称号文本（忽略大小写）。
+     *
+     * @return 命中的索引（>=0）；未找到返回 -1；文本重复返回 -2；数字索引越界返回 -3
+     */
+    private int resolveTitleSelector(UUID owner, String selector){
+        List<String> texts = new ArrayList<>();
+        for(Map<String,Object> entry : titleList(owner)){
+            texts.add(entry.get("title") == null ? "" : String.valueOf(entry.get("title")));
+        }
+        return resolveTitleSelector(texts, selector);
+    }
+
+    /** 纯逻辑版本，便于单元测试：同上，titles 为称号文本列表 */
+    static int resolveTitleSelector(List<String> titles, String selector){
+        if(titles == null || titles.isEmpty()) return -1;
+        String value = selector == null ? "" : selector.trim();
+        if(value.isEmpty()) return -1;
+        boolean numeric = value.matches("\\d{1,9}");
+        if(numeric){
+            int index = Integer.parseInt(value);
+            if(index < titles.size()) return index;
+        }
+        int match = -1;
+        int count = 0;
+        for(int i=0;i<titles.size();i++){
+            String text = titles.get(i) == null ? "" : titles.get(i);
+            if(value.equalsIgnoreCase(text)){
+                if(count == 0) match = i;
+                count++;
+            }
+        }
+        if(count > 1) return -2;
+        if(count == 1) return match;
+        return numeric ? -3 : -1;
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        // 旧配置文件按 config-version 自动补齐新增项，已有设置保持原样
+        upgradeConfigIfNeeded();
+        reloadConfig();
         titleTextKey = new NamespacedKey(this, "stored_title_text");
         titleColorKey = new NamespacedKey(this, "stored_title_color");
         titleWeightKey = new NamespacedKey(this, "stored_title_weight");
@@ -453,7 +510,104 @@ public final class DSMPTitlePlugin extends JavaPlugin implements Listener, Comma
                 try { langFile.createNewFile(); } catch (IOException ignored) {}
             }
         }
+        // 旧语言文件按 language-version 自动补齐新增键，已有翻译保持原样
+        upgradeLanguageIfNeeded(langFile, resourceName);
         lang = YamlConfiguration.loadConfiguration(langFile);
+    }
+
+    /** 读取插件内置的 YAML 资源，作为版本升级模板 */
+    private YamlConfiguration readBundledYaml(String resourceName) {
+        try (InputStream in = getResource(resourceName)) {
+            if (in == null) return null;
+            try (Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+                YamlConfiguration yaml = new YamlConfiguration();
+                yaml.load(reader);
+                return yaml;
+            }
+        } catch (Exception ex) {
+            getLogger().warning("读取内置资源 " + resourceName + " 失败: " + ex.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 按 config-version 升级配置文件：只补充旧文件缺失的键与注释，
+     * 已存在的键（包括用户改过的值，如 language）保持原样。
+     */
+    private void upgradeConfigIfNeeded() {
+        File file = new File(getDataFolder(), "config.yml");
+        if (!file.exists()) return;
+        YamlConfiguration bundled = readBundledYaml("config.yml");
+        if (bundled == null) return;
+        int target = bundled.getInt("config-version", 0);
+        if (target <= 0) return;
+        YamlConfiguration current = YamlConfiguration.loadConfiguration(file);
+        int version = current.getInt("config-version", 0);
+        if (version >= target) {
+            if (version > target) {
+                getLogger().warning("配置文件版本(v" + version + ")高于插件内置版本(v" + target + ")，请更新插件");
+            }
+            return;
+        }
+        int added = mergeMissingKeys(current, bundled);
+        current.set("config-version", target);
+        copyComments(bundled, current, "config-version");
+        try {
+            current.save(file);
+            getLogger().info("配置文件已从 v" + version + " 升级到 v" + target + "，新增 " + added + " 项，原有设置已保留");
+        } catch (IOException ex) {
+            getLogger().warning("配置文件升级保存失败: " + ex.getMessage());
+        }
+    }
+
+    /** 按 language-version 升级语言文件：只补充缺失键，已有翻译保持原样 */
+    private void upgradeLanguageIfNeeded(File file, String resourceName) {
+        if (file == null || !file.exists()) return;
+        YamlConfiguration bundled = readBundledYaml(resourceName);
+        if (bundled == null) return;
+        int target = bundled.getInt("language-version", 0);
+        if (target <= 0) return;
+        YamlConfiguration current = YamlConfiguration.loadConfiguration(file);
+        int version = current.getInt("language-version", 0);
+        if (version >= target) {
+            if (version > target) {
+                getLogger().warning("语言文件 " + resourceName + " 版本(v" + version + ")高于插件内置版本(v" + target + ")，请更新插件");
+            }
+            return;
+        }
+        int added = mergeMissingKeys(current, bundled);
+        current.set("language-version", target);
+        copyComments(bundled, current, "language-version");
+        try {
+            current.save(file);
+            getLogger().info("语言文件 " + resourceName + " 已从 v" + version + " 升级到 v" + target + "，新增 " + added + " 个键，已有内容已保留");
+        } catch (IOException ex) {
+            getLogger().warning("语言文件升级保存失败 " + resourceName + ": " + ex.getMessage());
+        }
+    }
+
+    /** 只补充目标文件缺失的键（含子键与注释），返回新增的叶子键数量 */
+    static int mergeMissingKeys(ConfigurationSection target, ConfigurationSection defaults) {
+        int added = 0;
+        for (String key : defaults.getKeys(true)) {
+            if (target.isSet(key)) continue;
+            Object value = defaults.get(key);
+            if (value instanceof ConfigurationSection) {
+                target.createSection(key);
+            } else {
+                target.set(key, value);
+                added++;
+            }
+            copyComments(defaults, target, key);
+        }
+        return added;
+    }
+
+    private static void copyComments(ConfigurationSection from, ConfigurationSection to, String key) {
+        List<String> comments = from.getComments(key);
+        if (comments != null && !comments.isEmpty()) {
+            to.setComments(key, new ArrayList<>(comments));
+        }
     }
 
     private void saveData() {
@@ -486,6 +640,7 @@ public final class DSMPTitlePlugin extends JavaPlugin implements Listener, Comma
                 return true;
             }
             if(args.length == 1){
+                upgradeConfigIfNeeded();
                 reloadConfig();
                 loadLanguage();
                 loadGroupConfig();
@@ -499,6 +654,7 @@ public final class DSMPTitlePlugin extends JavaPlugin implements Listener, Comma
             if(args.length == 2){
                 if(args[1].equalsIgnoreCase("config")){
                     if (!sender.hasPermission("dsmptitle.reload.config")) { sender.sendMessage(msg("no-permission")); return true; }
+                    upgradeConfigIfNeeded();
                     reloadConfig();
                     loadRuntimeConfig();
                     setupEconomy();
@@ -609,87 +765,90 @@ public final class DSMPTitlePlugin extends JavaPlugin implements Listener, Comma
                 return true;
             }
             String targetName = args[1];
-            String delTitle = String.join(" ", Arrays.copyOfRange(args,2,args.length));
-            delTitle = delTitle.replaceAll("^\"|\"$", "");
+            String selector = titleSelector(args, 2);
             UUID targetUuid = findKnownPlayer(targetName);
             if(targetUuid == null){
                 sender.sendMessage(msg("player-not-found", Map.of("player",targetName)));
                 return true;
             }
-            String base = targetUuid.toString();
-            List<Map<String,Object>> rawList = (List<Map<String,Object>>)data.getList(base + ".titles");
-            if(rawList == null) rawList = new ArrayList<>();
-            boolean found = false;
-            int activeIdx = getActiveIndex(targetUuid);
-            boolean deleteIsActive = false;
-            List<Map<String,Object>> newList = new ArrayList<>();
-            for(int i=0;i<rawList.size();i++){
-                Map<String,Object> entry = rawList.get(i);
-                String t = String.valueOf(entry.get("title"));
-                if(!delTitle.equalsIgnoreCase(t)){
-                    newList.add(entry);
-                }else{
-                    found = true;
-                    if(i == activeIdx) deleteIsActive = true;
-                }
-            }
-            if(!found){
-                sender.sendMessage(msg("remove-not-found", Map.of("title", delTitle)));
+            List<Map<String,Object>> titles = titleList(targetUuid);
+            int index = resolveTitleSelector(targetUuid, selector);
+            if(index == -2){
+                // 仓库里有多个同名文本, 必须改用索引, 避免误删
+                sender.sendMessage(msg("duplicate-title-use-index"));
                 return true;
             }
-            data.set(base+".titles", newList);
-            if(deleteIsActive){
+            if(index == -3){
+                sender.sendMessage(msg("index-out-of-range", Map.of("size", String.valueOf(titles.size()))));
+                return true;
+            }
+            if(index < 0){
+                sender.sendMessage(msg("remove-not-found", Map.of("title", selector)));
+                return true;
+            }
+            int activeIndex = getActiveIndex(targetUuid);
+            Map<String,Object> removed = titles.remove(index);
+            String removedText = removed == null || removed.get("title") == null
+                    ? selector : String.valueOf(removed.get("title"));
+            data.set(targetUuid + ".titles", titles);
+            if(activeIndex == index){
                 clearUserTitle(targetUuid);
+            }else if(activeIndex > index){
+                // 删除条目在激活索引前面, 激活索引减一
+                setActiveIndex(targetUuid, activeIndex - 1);
             }
             saveData();
-            sender.sendMessage(msg("remove-success", Map.of("player", targetName, "title", delTitle)));
+            sender.sendMessage(msg("remove-success", Map.of("player", targetName, "title", removedText)));
             return true;
         }
-        if(sub.equals("removebyindex")){
-            if(!sender.hasPermission("dsmptitle.remove")){
+        if(sub.equals("wear")){
+            if(!sender.hasPermission("dsmptitle.wear")){
                 sender.sendMessage(msg("no-permission"));
                 return true;
             }
             if(args.length <3){
-                sender.sendMessage(msg("remove-index-usage"));
+                sender.sendMessage(msg("wear-usage"));
                 return true;
             }
             String targetName = args[1];
-            int idx;
-            try{
-                idx = Integer.parseInt(args[2]);
-            }catch (NumberFormatException e){
-                sender.sendMessage(msg("index-invalid"));
-                return true;
-            }
+            String selector = titleSelector(args, 2);
             UUID targetUuid = findKnownPlayer(targetName);
             if(targetUuid == null){
                 sender.sendMessage(msg("player-not-found", Map.of("player",targetName)));
                 return true;
             }
-            String base = targetUuid.toString();
-            List<Map<String,Object>> rawList = (List<Map<String,Object>>)data.getList(base + ".titles");
-            if(rawList == null) rawList = new ArrayList<>();
-            if(idx <0 || idx >= rawList.size()){
-                sender.sendMessage(msg("index-out-of-range", Map.of("size", String.valueOf(rawList.size()))));
+            List<Map<String,Object>> titles = titleList(targetUuid);
+            int index = resolveTitleSelector(targetUuid, selector);
+            if(index == -2){
+                // 仓库里有多个同名文本, 必须改用索引, 避免戴错
+                sender.sendMessage(msg("duplicate-title-use-index"));
                 return true;
             }
-            Map<String,Object> delEntry = rawList.get(idx);
-            String delTitleText = String.valueOf(delEntry.get("title"));
-            int activeIdx = getActiveIndex(targetUuid);
-            boolean isDeleteActive = (idx == activeIdx);
-            rawList.remove(idx);
-            data.set(base+".titles", rawList);
-            if(isDeleteActive){
-                clearUserTitle(targetUuid);
-            }else{
-                // 删除条目在激活索引前面，激活索引减一
-                if(activeIdx > idx){
-                    setActiveIndex(targetUuid, activeIdx - 1);
-                }
+            if(index == -3){
+                sender.sendMessage(msg("index-out-of-range", Map.of("size", String.valueOf(titles.size()))));
+                return true;
             }
+            if(index < 0){
+                sender.sendMessage(msg("wear-not-found", Map.of("player", targetName, "title", selector)));
+                return true;
+            }
+            Map<String,Object> entry = titles.get(index);
+            String titleText = entry.get("title") == null ? "" : String.valueOf(entry.get("title"));
+            String titleColor = entry.get("color") == null ? getDefaultBuyTitleColor() : String.valueOf(entry.get("color"));
+            int titleWeight = entry.get("weight") instanceof Number number
+                    ? number.intValue() : getConfig().getInt("prefix-weight", 500);
+            if(!applyTitleWithParam(targetUuid, titleText, titleColor, titleWeight)){
+                sender.sendMessage(msg("wear-failed"));
+                return true;
+            }
+            setActiveIndex(targetUuid, index);
+            data.set(targetUuid + ".name", targetName);
             saveData();
-            sender.sendMessage(msg("remove-index-success", Map.of("title", delTitleText)));
+            Map<String,String> vars = new HashMap<>();
+            vars.put("player", targetName);
+            vars.put("title", coloredTitleRaw(titleText, titleColor));
+            vars.put("index", String.valueOf(index));
+            sender.sendMessage(msg("wear-success", vars));
             return true;
         }
         if (!(sender instanceof Player player)) {
@@ -774,7 +933,8 @@ public final class DSMPTitlePlugin extends JavaPlugin implements Listener, Comma
             List<String> list = new ArrayList<>(List.of("buy", "cancel", "clear", "gui", "menu"));
             if (sender.hasPermission("dsmptitle.reload")) list.add("reload");
             if (sender.hasPermission("dsmptitle.set")) list.add("set");
-            if (sender.hasPermission("dsmptitle.remove")) { list.add("remove"); list.add("removebyindex"); }
+            if (sender.hasPermission("dsmptitle.wear")) list.add("wear");
+            if (sender.hasPermission("dsmptitle.remove")) list.add("remove");
             return partial(list, args[0]);
         }
         if(args.length ==2 && args[0].equalsIgnoreCase("reload") && sender.hasPermission("dsmptitle.reload")){
@@ -801,13 +961,19 @@ public final class DSMPTitlePlugin extends JavaPlugin implements Listener, Comma
         if(args.length ==2 && args[0].equalsIgnoreCase("set") && sender.hasPermission("dsmptitle.set")){
             return partial(knownPlayerNames(), args[1]);
         }
-        if (args.length == 2 && (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("removebyindex"))
-                && sender.hasPermission("dsmptitle.remove")) {
+        if(args.length ==2 && args[0].equalsIgnoreCase("remove") && sender.hasPermission("dsmptitle.remove")){
             return partial(knownPlayerNames(), args[1]);
         }
-        if (args.length >= 3 && (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("removebyindex"))
-                && sender.hasPermission("dsmptitle.remove")) {
-            // <titles> / <index> intentionally has no tab completion
+        if(args.length ==2 && args[0].equalsIgnoreCase("wear") && sender.hasPermission("dsmptitle.wear")){
+            return partial(knownPlayerNames(), args[1]);
+        }
+        if(args.length ==3 && args[0].equalsIgnoreCase("remove") && sender.hasPermission("dsmptitle.remove")){
+            return partial(titleSelectors(args[1]), args[2]);
+        }
+        if(args.length ==3 && args[0].equalsIgnoreCase("wear") && sender.hasPermission("dsmptitle.wear")){
+            return partial(titleSelectors(args[1]), args[2]);
+        }
+        if(args.length >=4 && (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("wear"))){
             return List.of();
         }
         if(args.length ==3 && args[0].equalsIgnoreCase("set")){
@@ -824,6 +990,21 @@ public final class DSMPTitlePlugin extends JavaPlugin implements Listener, Comma
 
     private List<String> partial(List<String> list, String input) {
         return list.stream().filter(s -> s.toLowerCase(Locale.ROOT).startsWith(input.toLowerCase(Locale.ROOT))).sorted().toList();
+    }
+
+    /** 补全用：称号索引 + 不含空格的称号文本 */
+    private List<String> titleSelectors(String playerName) {
+        UUID uuid = findKnownPlayer(playerName);
+        if (uuid == null) return List.of();
+        List<Map<String,Object>> titles = titleList(uuid);
+        List<String> out = new ArrayList<>();
+        for (int i = 0; i < titles.size(); i++) {
+            out.add(String.valueOf(i));
+            Map<String,Object> entry = titles.get(i);
+            String text = entry.get("title") == null ? "" : String.valueOf(entry.get("title"));
+            if (!text.isBlank() && !text.contains(" ")) out.add(text);
+        }
+        return out;
     }
 
     private void buy(Player p) {
