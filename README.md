@@ -359,18 +359,6 @@ Titles can also be rejected when they contain configured banned words or forbidd
 - Administrative title management is controlled by the corresponding permission nodes.
 - Configuration and language files are upgraded automatically and keep your existing values.
 
-## Source Code
-
-The source code of DSMPTitle is published on GitHub for reference only.
-
-👉 https://github.com/dydaozhu/DsmpTitle
-
-## License
-
-Copyright (C) 2025 dydaozhu
-
-DSMPTitle is free software: you can redistribute it and/or modify it under the terms of the **GNU Affero General Public License v3.0** as published by the Free Software Foundation.
-
 DSMPTitle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 Because DSMPTitle is licensed under the AGPL, if you run a modified version of this plugin on a publicly accessible server, you must offer the corresponding source code to the users of that server.
